@@ -8,131 +8,51 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="习惯记录">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="format-detection" content="telephone=no">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
-<title>习惯记录</title>
+<title>习惯记录已经合并到 LifeBoard</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
-<link rel="stylesheet" href="launcher.css">
-<script src="core.js" defer></script>
-<script src="launcher.js" defer></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #f4f6f5; color: #1f2933; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Segoe UI", Roboto, sans-serif; -webkit-text-size-adjust: 100%; }
+  main { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: calc(24px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom)); }
+  .card { width: 100%; max-width: 440px; background: #fff; border-radius: 20px; padding: 32px 24px; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 4px 16px rgba(16, 24, 40, 0.06); }
+  img { width: 72px; height: 72px; }
+  h1 { font-size: 24px; line-height: 1.35; margin: 16px 0 8px; }
+  p { font-size: 16px; line-height: 1.6; margin: 0 0 24px; color: #4b5563; }
+  a.btn { display: flex; align-items: center; justify-content: center; min-height: 56px; border-radius: 14px; background: #4f46e5; color: #fff; font-size: 18px; font-weight: 700; text-decoration: none; }
+  a.btn:active { background: #4338ca; }
+</style>
 </head>
 <body>
-<main class="wrap">
-  <section id="view-boot" class="view center">
-    <img class="logo" src="icons/icon.svg" alt="">
-    <p id="boot-text" class="muted">正在打开…</p>
-  </section>
-
-  <section id="view-install" class="view center" hidden>
-    <img class="logo" src="icons/icon.svg" alt="">
-    <h1>正在下载 App</h1>
-    <div class="progress"><div id="install-bar"></div></div>
-    <p id="install-text" class="muted">正在连接 GitHub…</p>
-  </section>
-
-  <section id="view-error" class="view" hidden>
-    <div class="card error-card">
-      <h1 id="error-title">出错了</h1>
-      <p id="error-detail"></p>
-      <div class="actions">
-        <button id="btn-retry" class="btn primary big" type="button">重试</button>
-        <button id="btn-error-setup" class="btn big" type="button">重新设置密钥</button>
-      </div>
-    </div>
-  </section>
-
-  <section id="view-setup" class="view" hidden>
-    <header class="hero">
-      <img class="logo small" src="icons/icon.svg" alt="">
-      <h1>习惯记录</h1>
-      <p class="sub">第一次在这台设备上使用，需要一把 GitHub 密钥，用来下载 App 和同步数据。密钥只保存在这台设备上。</p>
-    </header>
-
-    <div id="ios-tip" class="card tip" hidden>
-      <h2>iPhone 请先添加到主屏幕</h2>
-      <p>Safari 和主屏幕上的 App 是分开保存数据的：在 Safari 里设置的密钥，主屏幕 App 里用不了。所以请先：</p>
-      <ol class="steps">
-        <li>点 Safari 底部（或地址栏旁）的「分享」按钮（方框带向上箭头）。</li>
-        <li>往下找到「添加到主屏幕」，点「添加」。</li>
-        <li>回到手机桌面，点「习惯记录」图标打开，再在里面扫码或粘贴密钥。</li>
-      </ol>
-    </div>
-
-    <div id="install-card" class="card tip" hidden>
-      <h2>安装到手机桌面</h2>
-      <p>安装后从桌面图标打开，就像普通 App 一样。</p>
-      <button id="btn-install" class="btn primary big" type="button">安装到桌面</button>
-    </div>
-
-    <div id="current-key" class="card" hidden>
-      <h2>这台设备已经保存了密钥</h2>
-      <p>密钥：<code id="current-key-mask"></code><span id="current-key-account"></span></p>
-      <div class="actions">
-        <button id="btn-continue" class="btn primary big" type="button">继续使用，打开 App</button>
-        <button id="btn-forget" class="btn big danger-text" type="button">删除这台设备上的密钥</button>
-      </div>
-      <p class="muted">要更换密钥，直接在下面扫码或粘贴新的密钥即可。</p>
-    </div>
-
-    <div class="cards">
-      <div id="card-scan" class="card">
-        <h2>扫码导入密钥（手机推荐）</h2>
-        <p>在已经设置好的电脑上打开 习惯记录 → 设置 → 「在手机上使用」→「显示二维码」，然后点下面的按钮扫码。</p>
-        <button id="btn-scan" class="btn primary big" type="button">扫码导入密钥</button>
-      </div>
-
-      <div id="card-paste" class="card">
-        <h2>粘贴密钥</h2>
-        <div class="paste-row">
-          <input id="token-input" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="在这里粘贴密钥（github_pat_…）" aria-label="密钥">
-          <button id="btn-paste" class="btn" type="button">粘贴</button>
-        </div>
-        <p id="token-preview" class="muted small"></p>
-        <button id="btn-verify" class="btn primary big" type="button">验证并开始</button>
-      </div>
-
-      <div id="setup-msg" class="card msg" hidden>
-        <h2 id="setup-msg-title"></h2>
-        <p id="setup-msg-detail"></p>
-      </div>
-
-      <div id="card-create" class="card">
-        <h2>还没有密钥？在电脑上生成（约 1 分钟）</h2>
-        <ol class="steps">
-          <li>在电脑浏览器打开 github.com，先确认右上角头像是 <b>SuperPhant</b>。如果不是：点头像 → 切换账号，或退出后用 SuperPhant 登录。</li>
-          <li>点下面的「去 GitHub 生成密钥」。名称、说明、所属账号（SuperPhant）、有效期（不过期）、权限（Contents：Read and write）都已经填好，不用改。</li>
-          <li>在 <b>Repository access</b> 里选 <b>Only select repositories</b>，在下拉框中勾选 <b>habit-tracker</b> 和 <b>habit-tracker-data</b> 两个仓库。</li>
-          <li>拉到页面最下面，点 <b>Generate token</b>（如果弹出确认框，再点一次）。</li>
-          <li>点密钥旁边的复制按钮。这把密钥只显示这一次。</li>
-          <li>回到这个页面，点「粘贴」，再点「验证并开始」。</li>
-        </ol>
-        <a id="btn-create" class="btn big" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">去 GitHub 生成密钥</a>
-      </div>
-
-      <div id="card-phone" class="card">
-        <h2>在手机上使用</h2>
-        <p><b>iPhone：</b>用 Safari 打开 <span class="url-text"></span> → 点「分享」→「添加到主屏幕」→「添加」→ 从桌面的「习惯记录」图标打开 →「扫码导入密钥」，扫电脑上显示的二维码。</p>
-        <p><b>安卓：</b>用 Chrome 打开 <span class="url-text"></span> → 点右上角「⋮」→「安装应用」或「添加到主屏幕」→ 从桌面图标打开 →「扫码导入密钥」，扫电脑上显示的二维码。</p>
-        <p class="muted">电脑上的二维码在：习惯记录 → 设置 → 在手机上使用 → 显示二维码。扫码时别让别人拍到电脑屏幕。</p>
-      </div>
-    </div>
-
-    <p class="foot muted">密钥只保存在这台设备的浏览器里，不会上传到别的地方，页面上始终打码显示。</p>
-  </section>
-</main>
-
-<div id="scanner" class="scanner" hidden>
-  <video id="scan-video" playsinline muted autoplay></video>
-  <div class="scan-frame" aria-hidden="true"></div>
-  <div class="scan-bottom">
-    <p id="scan-text">把电脑屏幕上的二维码放进框里</p>
-    <button id="btn-scan-close" class="btn big" type="button">取消</button>
+<main>
+  <div class="card">
+    <img src="icons/icon.svg" alt="">
+    <h1>习惯记录已经合并到 LifeBoard</h1>
+    <p>以前的项目和记录都在 LifeBoard 的「习惯」里，以后请在 LifeBoard 里记录。</p>
+    <a class="btn" id="open-lifeboard" href="https://superphant.github.io/lifeboard-web/">打开 LifeBoard</a>
   </div>
-</div>
-<noscript><p style="padding:24px;font-size:16px">需要开启 JavaScript 才能使用。</p></noscript>
+</main>
+<script>
+  // 清理旧 App 留在这台设备上的东西（只清理习惯记录自己的，不碰同一网站上的 LifeBoard）
+  (function () {
+    var scope = new URL('./', location.href).href;
+    try {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (list) {
+          list.forEach(function (r) { if (r.scope === scope) r.unregister(); });
+        }).catch(function () {});
+      }
+      if (window.caches) {
+        caches.keys().then(function (keys) {
+          keys.forEach(function (k) { if (k.indexOf('habit-app-') === 0 || k.indexOf('habit-launcher-') === 0) caches.delete(k); });
+        }).catch(function () {});
+      }
+      if (window.indexedDB) indexedDB.deleteDatabase('habit-launcher');
+    } catch (e) { /* 不支持就算了 */ }
+  })();
+</script>
 </body>
 </html>
